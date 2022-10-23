@@ -6,18 +6,26 @@ import com.example.models.Hero
 import com.example.models.MilitaryRank
 
 class HeroRepositoryImpl: HeroRepository {
-    override val heroes: Map<Int, List<Hero>> by lazy {
-        mapOf(
-           1 to heroesList.subList(0, 4),
-           2 to heroesList.subList(4, 8),
-           3 to heroesList.subList(8, 12),
-           4 to heroesList.subList(12, 16),
-           5 to heroesList.subList(16, 20)
-        )
+    override val heroes: List<List<Hero>> by lazy {
+        heroesList.chunked(4)
     }
 
     override suspend fun getAllHeroes(page: Int): ApiResponse {
-        TODO("Not yet implemented")
+        return ApiResponse(
+            success = true,
+            message = "ok",
+            prevPage = calculatePrevPage(page),
+            nextPage = calculateNextPage(page),
+            heroes[page]
+        )
+    }
+
+    private fun calculatePrevPage(page: Int): Int? {
+        return if (page > 0) page - 1 else null
+    }
+
+    private fun calculateNextPage(page: Int): Int? {
+        return if (page < heroes.size - 1) page + 1 else null
     }
 
     override suspend fun searchHeroes(name: String): ApiResponse {

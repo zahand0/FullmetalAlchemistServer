@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class Species {
-    Human(),
-    Homunculus()
+    Human,
+    Homunculus
 }

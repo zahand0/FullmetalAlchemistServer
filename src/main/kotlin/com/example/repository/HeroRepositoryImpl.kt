@@ -5,7 +5,7 @@ import com.example.models.ApiResponse
 import com.example.models.Hero
 import com.example.models.MilitaryRank
 
-class HeroRepositoryImpl: HeroRepository {
+class HeroRepositoryImpl : HeroRepository {
     override val heroes: List<List<Hero>> by lazy {
         heroesList.chunked(4)
     }
@@ -28,7 +28,18 @@ class HeroRepositoryImpl: HeroRepository {
         return if (page < heroes.size - 1) page + 1 else null
     }
 
-    override suspend fun searchHeroes(name: String): ApiResponse {
-        TODO("Not yet implemented")
+    override suspend fun searchHeroes(name: String?): ApiResponse {
+        return ApiResponse(
+            success = true,
+            message = "ok",
+            heroes = findHeroes(name)
+        )
+    }
+
+    private fun findHeroes(name: String?): List<Hero> {
+        return if (!name.isNullOrBlank())
+            heroesList.filter { it.name.lowercase().contains(name.lowercase()) }
+        else
+            emptyList()
     }
 }

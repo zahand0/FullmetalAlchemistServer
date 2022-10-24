@@ -1,23 +1,14 @@
 package com.example
 
-import com.example.di.koinModule
 import com.example.models.ApiResponse
-import com.example.models.Hero
 import com.example.repository.HeroRepository
-import com.example.repository.HeroRepositoryImpl
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.dsl.module
 import org.koin.java.KoinJavaComponent.inject
-import org.koin.test.KoinTest
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -45,7 +36,6 @@ class ApplicationTest {
         environment {
             developmentMode = false
         }
-
 
         client.get("/fma/heroes").apply {
             assertEquals(
@@ -110,6 +100,56 @@ class ApplicationTest {
 
     private fun calculateNextPage(page: Int, maxPages: Int): Int? {
         return if (page < maxPages - 1) page + 1 else null
+    }
+
+    @Test
+    fun `access all heroes endpoint, query non existing page number, assert error`() = testApplication {
+        environment {
+            developmentMode = false
+        }
+
+        client.get("/fma/heroes?page=5").apply {
+            assertEquals(
+                expected = HttpStatusCode.NotFound,
+                actual = status
+            )
+            val expected = ApiResponse(
+                success = false,
+                message = "Heroes not found."
+            )
+
+            val actual = Json.decodeFromString<ApiResponse>(bodyAsText())
+
+            assertEquals(
+                expected = expected,
+                actual = actual
+            )
+        }
+    }
+
+    @Test
+    fun `access all heroes endpoint, query invalid page number, assert error`() = testApplication {
+        environment {
+            developmentMode = false
+        }
+
+        client.get("/fma/heroes?page=invalid").apply {
+            assertEquals(
+                expected = HttpStatusCode.BadRequest,
+                actual = status
+            )
+            val expected = ApiResponse(
+                success = false,
+                message = "Only numbers allowed in page query param."
+            )
+
+            val actual = Json.decodeFromString<ApiResponse>(bodyAsText())
+
+            assertEquals(
+                expected = expected,
+                actual = actual
+            )
+        }
     }
 
 }

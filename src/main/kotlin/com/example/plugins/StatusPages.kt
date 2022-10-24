@@ -8,11 +8,11 @@ import javax.naming.AuthenticationException
 
 fun Application.configureStatusPages() {
     install(StatusPages) {
-//        status(HttpStatusCode.NotFound) { call, statusCode ->
-//            call.respond(
-//                message = "Page not found.",
-//                status = statusCode
-//            )
-//        }
+        status(HttpStatusCode.NotFound) { call, statusCode ->
+            call.respond(
+                message = "404: Page Not Found",
+                status = statusCode
+            )
+        }
     }
 }

@@ -113,12 +113,9 @@ class ApplicationTest {
                 expected = HttpStatusCode.NotFound,
                 actual = status
             )
-            val expected = ApiResponse(
-                success = false,
-                message = "Heroes not found."
-            )
+            val expected = "404: Page Not Found"
 
-            val actual = Json.decodeFromString<ApiResponse>(bodyAsText())
+            val actual = bodyAsText()
 
             assertEquals(
                 expected = expected,
@@ -148,6 +145,108 @@ class ApplicationTest {
             assertEquals(
                 expected = expected,
                 actual = actual
+            )
+        }
+    }
+
+    @Test
+    fun `access search heroes endpoint, query hero name, assert single hero result`() = testApplication {
+        environment {
+            developmentMode = false
+        }
+
+        client.get("/fma/heroes/search?name=mustang").apply {
+            assertEquals(
+                expected = HttpStatusCode.OK,
+                actual = status
+            )
+
+            val actual = Json.decodeFromString<ApiResponse>(bodyAsText())
+                .heroes.size
+            assertEquals(
+                expected = 1,
+                actual = actual
+            )
+        }
+    }
+
+    @Test
+    fun `access search heroes endpoint, query hero name, assert multipe heroes result`() = testApplication {
+        environment {
+            developmentMode = false
+        }
+
+        client.get("/fma/heroes/search?name=el").apply {
+            assertEquals(
+                expected = HttpStatusCode.OK,
+                actual = status
+            )
+
+            val actual = Json.decodeFromString<ApiResponse>(bodyAsText())
+                .heroes.size
+            assertEquals(
+                expected = 3,
+                actual = actual
+            )
+        }
+    }
+
+    @Test
+    fun `access search heroes endpoint, query an empty text, assert empty list as a result`() = testApplication {
+        environment {
+            developmentMode = false
+        }
+
+        client.get("/fma/heroes/search?name=").apply {
+            assertEquals(
+                expected = HttpStatusCode.OK,
+                actual = status
+            )
+
+            val actual = Json.decodeFromString<ApiResponse>(bodyAsText())
+                .heroes
+            assertEquals(
+                expected = emptyList(),
+                actual = actual
+            )
+        }
+    }
+
+    @Test
+    fun `access search heroes endpoint, query non existing hero, assert empty list as a result`() = testApplication {
+        environment {
+            developmentMode = false
+        }
+
+        client.get("/fma/heroes/search?name=naruto").apply {
+            assertEquals(
+                expected = HttpStatusCode.OK,
+                actual = status
+            )
+
+            val actual = Json.decodeFromString<ApiResponse>(bodyAsText())
+                .heroes
+            assertEquals(
+                expected = emptyList(),
+                actual = actual
+            )
+        }
+    }
+
+    @Test
+    fun `access non existing endpoint, assert not found`() = testApplication {
+        environment {
+            developmentMode = false
+        }
+
+        client.get("/unknown").apply {
+            assertEquals(
+                expected = HttpStatusCode.NotFound,
+                actual = status
+            )
+            assertEquals(
+                expected = "404: Page Not Found",
+                actual = bodyAsText()
             )
         }
     }

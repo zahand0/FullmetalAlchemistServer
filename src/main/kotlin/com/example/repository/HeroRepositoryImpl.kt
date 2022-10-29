@@ -3,7 +3,6 @@ package com.example.repository
 import com.example.data.heroesList
 import com.example.models.ApiResponse
 import com.example.models.Hero
-import com.example.models.MilitaryRank
 
 class HeroRepositoryImpl : HeroRepository {
     override val heroes: List<List<Hero>> by lazy {
@@ -16,7 +15,8 @@ class HeroRepositoryImpl : HeroRepository {
             message = "ok",
             prevPage = calculatePrevPage(page),
             nextPage = calculateNextPage(page),
-            heroes[page]
+            heroes = heroes[page],
+            lastUpdated = System.currentTimeMillis()
         )
     }
 

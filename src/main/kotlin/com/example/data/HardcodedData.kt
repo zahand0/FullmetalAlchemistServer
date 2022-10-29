@@ -465,7 +465,7 @@ val heroesList = listOf(
     Hero(
         id = 20,
         name = "Gluttony",
-        image = "/images/",
+        image = "/images/gluttony.jpg",
         memorableQuotes = listOf(
             "Can I eat him?",
             "Are lots of people gonna die again?",
